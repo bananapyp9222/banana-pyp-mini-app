@@ -10,7 +10,7 @@
 
 // 🔴 จุดที่เราจะใส่ LIFF ID ของ BANANA PYP
 // ในขั้นตอนถัดไป
-const LIFF_ID = "YOUR_LIFF_ID";
+const LIFF_ID = "2011754643-QvvqgzbX";
 
 // 🔴 จุดที่เราจะใส่ URL ของ Google Apps Script
 // ในขั้นตอนถัดไป
