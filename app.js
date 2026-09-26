@@ -1,8 +1,11 @@
 const LIFF_ID = "2011754643-QvvqgzbX";
 const API_URL = "https://script.google.com/macros/s/AKfycbyjgkCZeyEiXyqmK9GyzFYqNVQviOY6tgznDxo_LHo2MgkKr199yd1Skv_LiQshvMQ0YQ/exec";
 
+const PROMPTPAY_ID = "1101100055692";
+
 let products = [];
 let cart = [];
+
 let lineUser = {
   userId: "",
   displayName: ""
@@ -13,7 +16,9 @@ let currentOrder = {
   total: 0
 };
 
+
 document.addEventListener("DOMContentLoaded", async function () {
+
   console.log("BANANA PYP MINI APP starting...");
 
   setMinimumPickupDate();
@@ -22,49 +27,77 @@ document.addEventListener("DOMContentLoaded", async function () {
     .getElementById("orderButton")
     .addEventListener("click", submitOrder);
 
-  document
-    .getElementById("paymentConfirmButton")
-    .addEventListener("click", confirmPayment);
+  const paymentButton =
+    document.getElementById("paymentConfirmButton");
+
+  if (paymentButton) {
+    paymentButton.addEventListener(
+      "click",
+      confirmPayment
+    );
+  }
 
   await initializeLINE();
+
   await loadProducts();
 
   renderCart();
+
 });
 
 
 async function initializeLINE() {
+
   try {
-    if (!LIFF_ID || LIFF_ID === "YOUR_LIFF_ID") {
+
+    if (
+      !LIFF_ID ||
+      LIFF_ID === "ใส่ LIFF ID เดิมของคุณ"
+    ) {
+
       console.log("LIFF ID ยังไม่ได้ตั้งค่า");
 
-      document.getElementById("customerName").textContent =
-        "BANANA PYP 🍌";
+      document.getElementById(
+        "customerName"
+      ).textContent = "BANANA PYP 🍌";
 
       return;
     }
+
 
     await liff.init({
       liffId: LIFF_ID
     });
 
+
     console.log("LIFF initialized");
 
+
     if (!liff.isLoggedIn()) {
+
       liff.login();
+
       return;
     }
 
-    const profile = await liff.getProfile();
+
+    const profile =
+      await liff.getProfile();
+
 
     lineUser.userId =
       profile.userId || "";
 
+
     lineUser.displayName =
       profile.displayName || "ลูกค้า";
 
-    document.getElementById("customerName").textContent =
+
+    document.getElementById(
+      "customerName"
+    ).textContent =
       lineUser.displayName;
+
 
   } catch (error) {
 
@@ -73,74 +106,92 @@ async function initializeLINE() {
       error
     );
 
-    document.getElementById("customerName").textContent =
+
+    document.getElementById(
+      "customerName"
+    ).textContent =
       "BANANA PYP 🍌";
   }
+
 }
 
 
 async function loadProducts() {
 
   const productList =
-    document.getElementById("productList");
+    document.getElementById(
+      "productList"
+    );
+
 
   try {
 
     if (
       !API_URL ||
-      API_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL"
+      API_URL ===
+      "ใส่ Google Apps Script Web App URL เดิมของคุณ"
     ) {
 
       products = [
+
         {
           id: "P001",
           name: "เค้ก No.1",
           price: 85,
           type: "Cake"
         },
+
         {
           id: "P002",
           name: "เค้ก No.2",
           price: 85,
           type: "Cake"
         },
+
         {
           id: "P003",
           name: "เค้ก No.3",
           price: 125,
           type: "Cake"
         },
+
         {
           id: "P004",
           name: "เค้ก No.4",
           price: 85,
           type: "Cake"
         },
+
         {
           id: "P005",
           name: "เค้ก No.5",
           price: 85,
           type: "Cake"
         },
+
         {
           id: "P006",
           name: "เค้ก No.6",
           price: 125,
           type: "Cake"
         },
+
         {
           id: "B001",
           name: "Box 4 ชิ้น ไม่มีครีมชีส",
           price: 325,
           type: "Box"
         },
+
         {
           id: "B002",
           name: "Box 4 ชิ้น ครีมชีส 1 ชิ้น",
           price: 365,
           type: "Box"
         }
+
       ];
+
 
       renderProducts();
 
@@ -154,28 +205,36 @@ async function loadProducts() {
         "?action=getProducts"
       );
 
+
     if (!response.ok) {
+
       throw new Error(
         "ไม่สามารถโหลดสินค้าได้"
       );
     }
 
+
     const data =
       await response.json();
+
 
     if (
       !data.success ||
       !Array.isArray(data.products)
     ) {
+
       throw new Error(
         "รูปแบบข้อมูลสินค้าไม่ถูกต้อง"
       );
     }
 
+
     products =
       data.products;
 
+
     renderProducts();
+
 
   } catch (error) {
 
@@ -184,55 +243,83 @@ async function loadProducts() {
       error
     );
 
-    productList.innerHTML = `
+
+    productList.innerHTML =
+      `
       <div class="loading">
+
         ไม่สามารถโหลดสินค้าได้
+
         <br><br>
+
         กรุณาลองใหม่อีกครั้ง
+
       </div>
-    `;
+      `;
   }
+
 }
 
 
 function renderProducts() {
 
   const productList =
-    document.getElementById("productList");
+    document.getElementById(
+      "productList"
+    );
+
 
   if (!products.length) {
 
     productList.innerHTML =
-      `<div class="loading">ไม่พบสินค้า</div>`;
+      `
+      <div class="loading">
+        ไม่พบสินค้า
+      </div>
+      `;
 
     return;
   }
 
+
   productList.innerHTML = "";
+
 
   products.forEach(function (product) {
 
     const cartItem =
       cart.find(
-        item => item.id === product.id
+        item =>
+          item.id === product.id
       );
+
 
     const quantity =
       cartItem
         ? cartItem.quantity
         : 0;
 
+
     const card =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
+
 
     card.className =
       "product-card";
 
+
     if (quantity > 0) {
-      card.classList.add("selected");
+
+      card.classList.add(
+        "selected"
+      );
     }
 
-    card.innerHTML = `
+
+    card.innerHTML =
+      `
       <div class="product-info">
 
         <div class="product-name">
@@ -240,18 +327,24 @@ function renderProducts() {
         </div>
 
         <div class="product-type">
+
           ${
             product.type === "Box"
               ? "กล่อง"
               : "เค้กกล้วยหอม"
           }
+
         </div>
 
         <div class="product-price">
-          ${formatMoney(product.price)} บาท
+
+          ${formatMoney(product.price)}
+          บาท
+
         </div>
 
       </div>
+
 
       <div class="quantity-control">
 
@@ -263,12 +356,14 @@ function renderProducts() {
           −
         </button>
 
+
         <div
           class="quantity-number"
           id="qty-${product.id}"
         >
           ${quantity}
         </div>
+
 
         <button
           type="button"
@@ -279,10 +374,15 @@ function renderProducts() {
         </button>
 
       </div>
-    `;
+      `;
 
-    productList.appendChild(card);
+
+    productList.appendChild(
+      card
+    );
+
   });
+
 }
 
 
@@ -293,16 +393,21 @@ function changeQuantity(
 
   const product =
     products.find(
-      item => item.id === productId
+      item =>
+        item.id === productId
     );
 
+
   if (!product) {
+
     return;
   }
 
+
   let cartItem =
     cart.find(
-      item => item.id === productId
+      item =>
+        item.id === productId
     );
 
 
@@ -312,28 +417,48 @@ function changeQuantity(
   ) {
 
     cart.push({
-      id: product.id,
-      name: product.name,
-      price: Number(product.price),
-      quantity: 1
+
+      id:
+        product.id,
+
+      name:
+        product.name,
+
+      price:
+        Number(product.price),
+
+      quantity:
+        1
+
     });
 
-  } else if (cartItem) {
+  }
 
-    cartItem.quantity += change;
 
-    if (cartItem.quantity <= 0) {
+  else if (cartItem) {
+
+    cartItem.quantity +=
+      change;
+
+
+    if (
+      cartItem.quantity <= 0
+    ) {
 
       cart =
         cart.filter(
-          item => item.id !== productId
+          item =>
+            item.id !== productId
         );
     }
+
   }
 
 
   renderProducts();
+
   renderCart();
+
 }
 
 
@@ -344,17 +469,22 @@ function renderCart() {
       "orderSummary"
     );
 
+
   if (!cart.length) {
 
     summary.innerHTML =
-      `<div class="empty-cart">
+      `
+      <div class="empty-cart">
         ยังไม่ได้เลือกสินค้า
-      </div>`;
+      </div>
+      `;
 
     return;
   }
 
+
   let html = "";
+
   let total = 0;
 
 
@@ -364,27 +494,38 @@ function renderCart() {
       item.price *
       item.quantity;
 
-    total += itemTotal;
 
-    html += `
+    total +=
+      itemTotal;
+
+
+    html +=
+      `
       <div class="order-summary-item">
 
         <div class="summary-name">
+
           ${escapeHTML(item.name)}
           × ${item.quantity}
+
         </div>
 
+
         <div class="summary-price">
+
           ${formatMoney(itemTotal)}
           บาท
+
         </div>
 
       </div>
-    `;
+      `;
+
   });
 
 
-  html += `
+  html +=
+    `
     <div class="order-total">
 
       <span>
@@ -392,16 +533,19 @@ function renderCart() {
       </span>
 
       <span>
+
         ${formatMoney(total)}
         บาท
+
       </span>
 
     </div>
-  `;
+    `;
 
 
   summary.innerHTML =
     html;
+
 }
 
 
@@ -410,15 +554,18 @@ function getCartTotal() {
   return cart.reduce(
     function (total, item) {
 
-      return total +
+      return (
+        total +
         (
           item.price *
           item.quantity
-        );
+        )
+      );
 
     },
     0
   );
+
 }
 
 
@@ -427,12 +574,15 @@ function getCartQuantity() {
   return cart.reduce(
     function (total, item) {
 
-      return total +
-        item.quantity;
+      return (
+        total +
+        item.quantity
+      );
 
     },
     0
   );
+
 }
 
 
@@ -514,7 +664,9 @@ async function submitOrder() {
     cart
       .map(
         item =>
-          `${item.name} x ${item.quantity}`
+          item.name +
+          " x " +
+          item.quantity
       )
       .join(", ");
 
@@ -548,11 +700,13 @@ async function submitOrder() {
 
     pickupTime:
       pickupTime
+
   };
 
 
   button.disabled =
     true;
+
 
   button.textContent =
     "กำลังส่งคำสั่งซื้อ...";
@@ -570,17 +724,22 @@ async function submitOrder() {
       await fetch(
         API_URL,
         {
-          method: "POST",
+
+          method:
+            "POST",
 
           headers: {
+
             "Content-Type":
               "text/plain;charset=utf-8"
+
           },
 
           body:
             JSON.stringify(
               orderData
             )
+
         }
       );
 
@@ -601,16 +760,30 @@ async function submitOrder() {
     currentOrder.orderId =
       orderId;
 
+
     currentOrder.total =
       orderData.total;
 
 
     showStatus(
-      `สั่งซื้อสำเร็จ 🎉<br>
-       เลขที่ออเดอร์:
-       <strong>${orderId}</strong><br>
-       ยอดรวม:
-       <strong>${formatMoney(orderData.total)} บาท</strong>`,
+      `
+      สั่งซื้อสำเร็จ 🎉
+
+      <br>
+
+      เลขที่ออเดอร์:
+      <strong>
+        ${escapeHTML(orderId)}
+      </strong>
+
+      <br>
+
+      ยอดรวม:
+      <strong>
+        ${formatMoney(orderData.total)}
+        บาท
+      </strong>
+      `,
       "success"
     );
 
@@ -623,12 +796,16 @@ async function submitOrder() {
 
     cart = [];
 
+
     renderProducts();
+
     renderCart();
+
 
     document.getElementById(
       "phone"
     ).value = "";
+
 
     document.getElementById(
       "pickupTime"
@@ -637,6 +814,7 @@ async function submitOrder() {
 
     button.textContent =
       "สั่งซื้อสำเร็จ ✓";
+
 
   } catch (error) {
 
@@ -655,9 +833,11 @@ async function submitOrder() {
     button.disabled =
       false;
 
+
     button.textContent =
       "ดำเนินการสั่งซื้อ";
   }
+
 }
 
 
@@ -671,10 +851,12 @@ function showPaymentSection(
       "paymentSection"
     );
 
+
   const orderIdElement =
     document.getElementById(
       "paymentOrderId"
     );
+
 
   const totalElement =
     document.getElementById(
@@ -682,8 +864,19 @@ function showPaymentSection(
     );
 
 
+  if (!section) {
+
+    console.error(
+      "ไม่พบ paymentSection"
+    );
+
+    return;
+  }
+
+
   orderIdElement.textContent =
     orderId;
+
 
   totalElement.textContent =
     formatMoney(total) +
@@ -703,6 +896,7 @@ function showPaymentSection(
     behavior: "smooth",
     block: "start"
   });
+
 }
 
 
@@ -716,53 +910,90 @@ function generatePromptPayQR(
     );
 
 
-  if (
-    typeof QRCode ===
-    "undefined"
-  ) {
+  if (!canvas) {
 
     console.error(
-      "QRCode library ไม่พบ"
+      "ไม่พบ canvas #promptpayQR"
     );
 
     return;
   }
 
 
-  /*
-   * PromptPay ID ของร้าน
-   * ใช้เบอร์/เลข PromptPay ที่ร้านกำหนด
-   */
+  if (
+    typeof QRCode ===
+    "undefined"
+  ) {
 
-  const promptPayId =
-    "1101100055692";
+    console.error(
+      "ไม่พบ QRCode Library"
+    );
+
+    return;
+  }
 
 
-  const payload =
-    createPromptPayPayload(
-      promptPayId,
-      amount
+  try {
+
+    const payload =
+      createPromptPayPayload(
+        PROMPTPAY_ID,
+        amount
+      );
+
+
+    console.log(
+      "PromptPay payload:",
+      payload
     );
 
 
-  QRCode.toCanvas(
-    canvas,
-    payload,
-    {
-      width: 260,
-      margin: 2
-    },
-    function (error) {
+    QRCode.toCanvas(
+      canvas,
+      payload,
+      {
 
-      if (error) {
+        width:
+          260,
 
-        console.error(
-          "QR generation error:",
-          error
+        margin:
+          2,
+
+        errorCorrectionLevel:
+          "M"
+
+      },
+
+      function (error) {
+
+        if (error) {
+
+          console.error(
+            "QR generation error:",
+            error
+          );
+
+          return;
+        }
+
+
+        console.log(
+          "PromptPay QR generated successfully"
         );
+
       }
-    }
-  );
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "PromptPay QR error:",
+      error
+    );
+
+  }
+
 }
 
 
@@ -773,44 +1004,80 @@ function createPromptPayPayload(
 
   const id =
     String(target)
-      .replace(/\D/g, "");
+      .replace(
+        /\D/g,
+        ""
+      );
 
 
-  let targetType = "";
+  let targetTag = "";
+
   let targetValue = "";
 
 
-  if (id.length === 10) {
+  if (
+    id.length === 10
+  ) {
 
-    targetType =
+    targetTag =
       "01";
+
 
     targetValue =
       "0066" +
       id.substring(1);
 
-  } else if (id.length === 13) {
+  }
 
-    targetType =
+
+  else if (
+    id.length === 13
+  ) {
+
+    targetTag =
       "02";
+
 
     targetValue =
       id;
 
-  } else {
+  }
+
+
+  else {
 
     throw new Error(
       "PromptPay ID ไม่ถูกต้อง"
     );
+
   }
+
+
+  const merchantAccount =
+    targetTag +
+    String(
+      targetValue.length
+    ).padStart(
+      2,
+      "0"
+    ) +
+    targetValue;
 
 
   const merchantAccountInformation =
     "0016A0000006770108" +
-    targetType +
-    String(targetValue.length)
-      .padStart(2, "0") +
-    targetValue;
+    merchantAccount;
+
+
+  const merchantAccountField =
+    "29" +
+    String(
+      merchantAccountInformation.length
+    ).padStart(
+      2,
+      "0"
+    ) +
+    merchantAccountInformation;
 
 
   const amountText =
@@ -821,28 +1088,26 @@ function createPromptPayPayload(
   let payload =
     "000201" +
     "010212" +
-    "29" +
-    String(
-      merchantAccountInformation.length
-    ).padStart(2, "0") +
-    merchantAccountInformation +
+    merchantAccountField +
     "5303764" +
-    "5802TH" +
-    "5303764";
+    "5802TH";
 
 
-  payload =
-    payload.replace(
-      "53037645302TH5303764",
-      "53037645302TH"
-    );
+  if (
+    Number(amount) > 0
+  ) {
 
+    payload +=
+      "54" +
+      String(
+        amountText.length
+      ).padStart(
+        2,
+        "0"
+      ) +
+      amountText;
 
-  payload +=
-    "54" +
-    String(amountText.length)
-      .padStart(2, "0") +
-    amountText;
+  }
 
 
   payload +=
@@ -857,6 +1122,7 @@ function createPromptPayPayload(
 
   return payload +
     crc;
+
 }
 
 
@@ -875,7 +1141,8 @@ function calculateCRC16(
   ) {
 
     crc ^=
-      text.charCodeAt(i) << 8;
+      text.charCodeAt(i) <<
+      8;
 
 
     for (
@@ -904,13 +1171,18 @@ function calculateCRC16(
       crc &=
         0xFFFF;
     }
+
   }
 
 
   return crc
     .toString(16)
     .toUpperCase()
-    .padStart(4, "0");
+    .padStart(
+      4,
+      "0"
+    );
+
 }
 
 
@@ -920,6 +1192,7 @@ async function confirmPayment() {
     document.getElementById(
       "paymentConfirmButton"
     );
+
 
   const status =
     document.getElementById(
@@ -932,20 +1205,23 @@ async function confirmPayment() {
     status.textContent =
       "ไม่พบเลขที่ออเดอร์";
 
+
     status.className =
       "status-message error";
+
 
     return;
   }
 
 
-  const confirm =
+  const confirmed =
     window.confirm(
       "ยืนยันว่าคุณได้โอนเงินตามยอดออเดอร์แล้วใช่หรือไม่?"
     );
 
 
-  if (!confirm) {
+  if (!confirmed) {
+
     return;
   }
 
@@ -953,12 +1229,14 @@ async function confirmPayment() {
   button.disabled =
     true;
 
+
   button.textContent =
     "กำลังแจ้งชำระเงิน...";
 
 
   status.textContent =
     "กำลังส่งข้อมูลให้ร้านตรวจสอบ...";
+
 
   status.className =
     "status-message info";
@@ -970,21 +1248,28 @@ async function confirmPayment() {
       await fetch(
         API_URL,
         {
-          method: "POST",
+
+          method:
+            "POST",
 
           headers: {
+
             "Content-Type":
               "text/plain;charset=utf-8"
+
           },
 
           body:
             JSON.stringify({
+
               action:
                 "confirmPayment",
 
               orderId:
                 currentOrder.orderId
+
             })
+
         }
       );
 
@@ -1004,14 +1289,19 @@ async function confirmPayment() {
 
     status.innerHTML =
       `
-        แจ้งชำระเงินเรียบร้อยแล้ว ✅
-        <br>
-        <strong>เลขที่ออเดอร์:
+      แจ้งชำระเงินเรียบร้อยแล้ว ✅
+
+      <br>
+
+      <strong>
+        เลขที่ออเดอร์:
         ${escapeHTML(currentOrder.orderId)}
-        </strong>
-        <br><br>
-        ร้านจะตรวจสอบยอดเงิน
-        และยืนยันการชำระเงินให้ครับ
+      </strong>
+
+      <br><br>
+
+      ร้านจะตรวจสอบยอดเงิน
+      และยืนยันการชำระเงินให้ครับ
       `;
 
 
@@ -1034,6 +1324,7 @@ async function confirmPayment() {
     status.textContent =
       "แจ้งชำระเงินไม่สำเร็จ กรุณาลองใหม่อีกครั้งครับ";
 
+
     status.className =
       "status-message error";
 
@@ -1041,9 +1332,11 @@ async function confirmPayment() {
     button.disabled =
       false;
 
+
     button.textContent =
       "ฉันชำระเงินแล้ว";
   }
+
 }
 
 
@@ -1052,29 +1345,46 @@ function createOrderId() {
   const now =
     new Date();
 
+
   const year =
     now.getFullYear();
+
 
   const month =
     String(
       now.getMonth() + 1
-    ).padStart(2, "0");
+    ).padStart(
+      2,
+      "0"
+    );
+
 
   const day =
     String(
       now.getDate()
-    ).padStart(2, "0");
+    ).padStart(
+      2,
+      "0"
+    );
+
 
   const random =
     Math.floor(
       1000 +
-      Math.random() * 9000
+      Math.random() *
+      9000
     );
 
 
   return (
-    `BP-${year}${month}${day}-${random}`
+    "BP-" +
+    year +
+    month +
+    day +
+    "-" +
+    random
   );
+
 }
 
 
@@ -1093,26 +1403,40 @@ function setMinimumPickupDate() {
   const year =
     today.getFullYear();
 
+
   const month =
     String(
       today.getMonth() + 1
-    ).padStart(2, "0");
+    ).padStart(
+      2,
+      "0"
+    );
+
 
   const day =
     String(
       today.getDate()
-    ).padStart(2, "0");
+    ).padStart(
+      2,
+      "0"
+    );
 
 
   const dateString =
-    `${year}-${month}-${day}`;
+    year +
+    "-" +
+    month +
+    "-" +
+    day;
 
 
   input.min =
     dateString;
 
+
   input.value =
     dateString;
+
 }
 
 
@@ -1123,6 +1447,7 @@ function isValidPhone(
   return /^0\d{9}$/.test(
     phone
   );
+
 }
 
 
@@ -1135,6 +1460,7 @@ function formatMoney(
   ).toLocaleString(
     "th-TH"
   );
+
 }
 
 
@@ -1152,8 +1478,11 @@ function showStatus(
   status.innerHTML =
     message;
 
+
   status.className =
-    `status-message ${type}`;
+    "status-message " +
+    type;
+
 }
 
 
@@ -1162,24 +1491,30 @@ function escapeHTML(
 ) {
 
   return String(value)
+
     .replace(
       /&/g,
       "&amp;"
     )
+
     .replace(
       /</g,
       "&lt;"
     )
+
     .replace(
       />/g,
       "&gt;"
     )
+
     .replace(
       /"/g,
       "&quot;"
     )
+
     .replace(
       /'/g,
       "&#039;"
     );
+
 }
