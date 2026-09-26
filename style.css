@@ -618,3 +618,75 @@ body {
   }
 
 }
+.payment-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.payment-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.payment-order {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.payment-order strong {
+  display: block;
+  font-size: 18px;
+  margin-top: 4px;
+}
+
+.payment-total {
+  font-size: 15px;
+  margin-top: 14px;
+}
+
+.payment-total strong {
+  display: block;
+  font-size: 28px;
+  margin-top: 5px;
+}
+
+.payment-instruction {
+  margin-top: 18px;
+  margin-bottom: 14px;
+  font-size: 15px;
+}
+
+.qr-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0;
+}
+
+#promptpayQR {
+  width: 260px;
+  height: 260px;
+  max-width: 100%;
+}
+
+.payment-note {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 12px 0 18px;
+  color: #666;
+}
+
+#paymentConfirmButton {
+  width: 100%;
+  margin-top: 8px;
+}
+
+#paymentConfirmButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
