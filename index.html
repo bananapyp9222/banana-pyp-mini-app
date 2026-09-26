@@ -12,7 +12,8 @@
 
   <!-- LINE LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  
   <!-- CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
@@ -249,7 +250,48 @@
       id="statusMessage"
       class="status-message"
     ></div>
+<div id="paymentSection" class="payment-section" style="display:none;">
 
+  <div class="payment-title">
+    💳 ชำระเงิน
+  </div>
+
+  <div class="payment-order">
+    เลขที่ออเดอร์
+    <strong id="paymentOrderId">-</strong>
+  </div>
+
+  <div class="payment-total">
+    ยอดที่ต้องชำระ
+    <strong id="paymentTotal">0 บาท</strong>
+  </div>
+
+  <div class="payment-instruction">
+    สแกน QR Code เพื่อชำระเงินผ่าน PromptPay
+  </div>
+
+  <div class="qr-wrapper">
+    <canvas id="promptpayQR"></canvas>
+  </div>
+
+  <div class="payment-note">
+    กรุณาตรวจสอบยอดเงินให้ตรงกับยอดออเดอร์ก่อนชำระ
+  </div>
+
+  <button
+    type="button"
+    id="paymentConfirmButton"
+    class="order-button"
+  >
+    ฉันชำระเงินแล้ว
+  </button>
+
+  <div
+    id="paymentStatus"
+    class="status-message"
+  ></div>
+
+</div>
   </main>
 
 
