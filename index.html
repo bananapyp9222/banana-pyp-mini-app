@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
+
+  <title>BANANA PYP</title>
+
+  <!-- LINE LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon">🍌</div>
+
+      <div>
+        <h1>BANANA PYP</h1>
+        <p>เค้กกล้วยหอมทอง</p>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- =========================
+       MAIN
+  ========================== -->
+  <main class="container">
+
+    <!-- LINE USER -->
+    <section class="welcome-card">
+      <p class="small-text">สวัสดีครับ 👋</p>
+
+      <h2 id="customerName">
+        กำลังโหลดข้อมูล...
+      </h2>
+
+      <p>
+        เลือกเค้กที่ต้องการ แล้วจองเวลารับสินค้าได้เลย
+      </p>
+    </section>
+
+
+    <!-- =========================
+         PRODUCT SECTION
+    ========================== -->
+    <section class="section">
+
+      <div class="section-title">
+        <h2>🍌 เลือกสินค้า</h2>
+        <p>เลือกจำนวนที่ต้องการ</p>
+      </div>
+
+      <div id="productList" class="product-list">
+
+        <!-- JavaScript จะโหลดสินค้าจาก Google Sheet ตรงนี้ -->
+
+        <div class="loading">
+          กำลังโหลดสินค้า...
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         ORDER SUMMARY
+    ========================== -->
+    <section class="section order-section">
+
+      <div class="section-title">
+        <h2>🛒 รายการของคุณ</h2>
+      </div>
+
+      <div id="orderSummary">
+
+        <div class="empty-cart">
+          ยังไม่ได้เลือกสินค้า
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         PICKUP INFORMATION
+    ========================== -->
+    <section class="section">
+
+      <div class="section-title">
+        <h2>📅 วันเวลารับสินค้า</h2>
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="pickupDate">
+          วันที่รับสินค้า
+        </label>
+
+        <input
+          type="date"
+          id="pickupDate"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="pickupTime">
+          เวลารับสินค้า
+        </label>
+
+        <select id="pickupTime">
+
+          <option value="">
+            เลือกเวลารับสินค้า
+          </option>
+
+          <option value="08:00">
+            08:00
+          </option>
+
+          <option value="09:00">
+            09:00
+          </option>
+
+          <option value="10:00">
+            10:00
+          </option>
+
+          <option value="11:00">
+            11:00
+          </option>
+
+          <option value="12:00">
+            12:00
+          </option>
+
+          <option value="13:00">
+            13:00
+          </option>
+
+          <option value="14:00">
+            14:00
+          </option>
+
+          <option value="15:00">
+            15:00
+          </option>
+
+          <option value="16:00">
+            16:00
+          </option>
+
+          <option value="17:00">
+            17:00
+          </option>
+
+        </select>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         CUSTOMER INFORMATION
+    ========================== -->
+    <section class="section">
+
+      <div class="section-title">
+        <h2>👤 ข้อมูลผู้สั่ง</h2>
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="phone">
+          เบอร์โทรศัพท์
+        </label>
+
+        <input
+          type="tel"
+          id="phone"
+          inputmode="numeric"
+          placeholder="เช่น 0812345678"
+          maxlength="10"
+        >
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         SHOP INFORMATION
+    ========================== -->
+    <section class="shop-info">
+
+      <h3>📍 จุดรับสินค้า</h3>
+
+      <p>
+        ร้านเค้กกล้วยหอมทอง บางพระ BANANA PYP
+      </p>
+
+      <p>
+        เปิดรับสินค้า 08:00–17:00 น.
+      </p>
+
+      <p class="note">
+        * รับจองวันเดียวกันได้ หากสินค้ามีสต็อก
+      </p>
+
+    </section>
+
+
+    <!-- =========================
+         ORDER BUTTON
+    ========================== -->
+    <button
+      id="orderButton"
+      class="order-button"
+      type="button"
+    >
+      ดำเนินการสั่งซื้อ
+    </button>
+
+
+    <!-- =========================
+         STATUS MESSAGE
+    ========================== -->
+    <div
+      id="statusMessage"
+      class="status-message"
+    ></div>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+  <footer class="app-footer">
+
+    <p>
+      BANANA PYP 🍌
+    </p>
+
+    <p>
+      เค้กกล้วยหอมทอง
+    </p>
+
+  </footer>
+
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+
+</body>
+</html>
