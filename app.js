@@ -14,7 +14,7 @@ const LIFF_ID = "YOUR_LIFF_ID";
 
 // 🔴 จุดที่เราจะใส่ URL ของ Google Apps Script
 // ในขั้นตอนถัดไป
-const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL";
+const API_URL = "https://script.google.com/macros/s/AKfycbyjgkCZeyEiXyqmK9GyzFYqNVQviOY6tgznDxo_LHo2MgkKr199yd1Skv_LiQshvMQ0YQ/exec";
 
 
 /* =====================================================
