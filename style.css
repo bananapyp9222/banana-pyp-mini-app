@@ -703,3 +703,14 @@ body {
   margin-top: 6px;
   min-height: 18px;
 }
+
+.promptpay-qr-image {
+  display: block;
+  width: 260px;
+  height: 260px;
+  max-width: 100%;
+  object-fit: contain;
+  margin: 12px auto 18px;
+  background: #ffffff;
+  border-radius: 12px;
+}
