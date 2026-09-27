@@ -17,15 +17,25 @@ let currentOrder = {
 };
 
 
+// ========================================
+// START APP
+// ========================================
+
 document.addEventListener("DOMContentLoaded", async function () {
 
   console.log("BANANA PYP MINI APP starting...");
 
   setMinimumPickupDate();
 
-  document
-    .getElementById("orderButton")
-    .addEventListener("click", submitOrder);
+  const orderButton =
+    document.getElementById("orderButton");
+
+  if (orderButton) {
+    orderButton.addEventListener(
+      "click",
+      submitOrder
+    );
+  }
 
   const paymentButton =
     document.getElementById("paymentConfirmButton");
@@ -37,6 +47,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
   }
 
+  setupPhoneValidation();
+
   await initializeLINE();
 
   await loadProducts();
@@ -46,20 +58,185 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 
+// ========================================
+// PHONE VALIDATION
+// ========================================
+
+function setupPhoneValidation() {
+
+  const phoneInput =
+    document.getElementById("phone");
+
+  if (!phoneInput) {
+
+    console.warn(
+      "ไม่พบช่องเบอร์โทรศัพท์ #phone"
+    );
+
+    return;
+  }
+
+
+  // ให้กรอกได้เฉพาะตัวเลข
+  phoneInput.setAttribute(
+    "inputmode",
+    "numeric"
+  );
+
+  phoneInput.setAttribute(
+    "maxlength",
+    "10"
+  );
+
+
+  phoneInput.addEventListener(
+    "input",
+    function () {
+
+      // เอาเฉพาะตัวเลข
+      let phone =
+        phoneInput.value.replace(
+          /\D/g,
+          ""
+        );
+
+
+      // จำกัด 10 หลัก
+      if (phone.length > 10) {
+
+        phone =
+          phone.substring(
+            0,
+            10
+          );
+
+      }
+
+
+      phoneInput.value =
+        phone;
+
+
+      validatePhoneField();
+
+    }
+  );
+
+
+  phoneInput.addEventListener(
+    "blur",
+    function () {
+
+      validatePhoneField();
+
+    }
+  );
+
+}
+
+
+function validatePhoneField() {
+
+  const phoneInput =
+    document.getElementById("phone");
+
+  if (!phoneInput) {
+
+    return false;
+  }
+
+
+  const phone =
+    phoneInput.value.trim();
+
+
+  let errorElement =
+    document.getElementById(
+      "phoneError"
+    );
+
+
+  // ถ้ายังไม่มีช่องข้อความแจ้งเตือน
+  // ให้สร้างให้อัตโนมัติ
+  if (!errorElement) {
+
+    errorElement =
+      document.createElement(
+        "div"
+      );
+
+    errorElement.id =
+      "phoneError";
+
+    errorElement.style.fontSize =
+      "13px";
+
+    errorElement.style.marginTop =
+      "6px";
+
+    phoneInput.parentElement.appendChild(
+      errorElement
+    );
+
+  }
+
+
+  if (!phone) {
+
+    errorElement.textContent =
+      "";
+
+    return false;
+
+  }
+
+
+  if (!/^0\d{9}$/.test(phone)) {
+
+    errorElement.textContent =
+      "กรุณากรอกเบอร์มือถือให้ครบ 10 หลัก";
+
+    errorElement.style.color =
+      "#d93025";
+
+    return false;
+
+  }
+
+
+  errorElement.textContent =
+    "✓ เบอร์มือถือถูกต้อง";
+
+  errorElement.style.color =
+    "#188038";
+
+  return true;
+
+}
+
+
+// ========================================
+// LINE LIFF
+// ========================================
+
 async function initializeLINE() {
 
   try {
 
     if (
       !LIFF_ID ||
-      LIFF_ID === "ใส่ LIFF ID เดิมของคุณ"
+      LIFF_ID ===
+      "ใส่ LIFF ID เดิมของคุณ"
     ) {
 
-      console.log("LIFF ID ยังไม่ได้ตั้งค่า");
+      console.log(
+        "LIFF ID ยังไม่ได้ตั้งค่า"
+      );
 
       document.getElementById(
         "customerName"
-      ).textContent = "BANANA PYP 🍌";
+      ).textContent =
+        "BANANA PYP 🍌";
 
       return;
     }
@@ -70,7 +247,9 @@ async function initializeLINE() {
     });
 
 
-    console.log("LIFF initialized");
+    console.log(
+      "LIFF initialized"
+    );
 
 
     if (!liff.isLoggedIn()) {
@@ -78,6 +257,7 @@ async function initializeLINE() {
       liff.login();
 
       return;
+
     }
 
 
@@ -90,7 +270,8 @@ async function initializeLINE() {
 
 
     lineUser.displayName =
-      profile.displayName || "ลูกค้า";
+      profile.displayName ||
+      "ลูกค้า";
 
 
     document.getElementById(
@@ -111,10 +292,15 @@ async function initializeLINE() {
       "customerName"
     ).textContent =
       "BANANA PYP 🍌";
+
   }
 
 }
 
+
+// ========================================
+// LOAD PRODUCTS
+// ========================================
 
 async function loadProducts() {
 
@@ -136,42 +322,42 @@ async function loadProducts() {
 
         {
           id: "P001",
-          name: "เค้ก No.1",
+          name: "เค้กกล้วยหอมทอง",
           price: 85,
           type: "Cake"
         },
 
         {
           id: "P002",
-          name: "เค้ก No.2",
+          name: "เค้กกล้วยหอมทอง อัลมอนด์",
           price: 85,
           type: "Cake"
         },
 
         {
           id: "P003",
-          name: "เค้ก No.3",
+          name: "เค้กกล้วยหอมทอง ครีมชีส",
           price: 125,
           type: "Cake"
         },
 
         {
           id: "P004",
-          name: "เค้ก No.4",
+          name: "เค้กกล้วยหอมช๊อกโก้",
           price: 85,
           type: "Cake"
         },
 
         {
           id: "P005",
-          name: "เค้ก No.5",
+          name: "เค้กกล้วยหอมช๊อกโก้ อัลมอนด์",
           price: 85,
           type: "Cake"
         },
 
         {
           id: "P006",
-          name: "เค้ก No.6",
+          name: "เค้กกล้วยหอมช๊อกโก้ ครีมชีส",
           price: 125,
           type: "Cake"
         },
@@ -196,6 +382,7 @@ async function loadProducts() {
       renderProducts();
 
       return;
+
     }
 
 
@@ -211,6 +398,7 @@ async function loadProducts() {
       throw new Error(
         "ไม่สามารถโหลดสินค้าได้"
       );
+
     }
 
 
@@ -220,12 +408,15 @@ async function loadProducts() {
 
     if (
       !data.success ||
-      !Array.isArray(data.products)
+      !Array.isArray(
+        data.products
+      )
     ) {
 
       throw new Error(
         "รูปแบบข้อมูลสินค้าไม่ถูกต้อง"
       );
+
     }
 
 
@@ -256,10 +447,15 @@ async function loadProducts() {
 
       </div>
       `;
+
   }
 
 }
 
+
+// ========================================
+// RENDER PRODUCTS
+// ========================================
 
 function renderProducts() {
 
@@ -279,112 +475,129 @@ function renderProducts() {
       `;
 
     return;
+
   }
 
 
-  productList.innerHTML = "";
+  productList.innerHTML =
+    "";
 
 
-  products.forEach(function (product) {
+  products.forEach(
+    function (product) {
 
-    const cartItem =
-      cart.find(
-        item =>
-          item.id === product.id
+      const cartItem =
+        cart.find(
+          item =>
+            item.id ===
+            product.id
+        );
+
+
+      const quantity =
+        cartItem
+          ? cartItem.quantity
+          : 0;
+
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "product-card";
+
+
+      if (quantity > 0) {
+
+        card.classList.add(
+          "selected"
+        );
+
+      }
+
+
+      card.innerHTML =
+        `
+        <div class="product-info">
+
+          <div class="product-name">
+
+            ${escapeHTML(
+              product.name
+            )}
+
+          </div>
+
+          <div class="product-type">
+
+            ${
+              product.type === "Box"
+                ? "กล่อง"
+                : "เค้กกล้วยหอม"
+            }
+
+          </div>
+
+          <div class="product-price">
+
+            ${formatMoney(
+              product.price
+            )}
+
+            บาท
+
+          </div>
+
+        </div>
+
+
+        <div class="quantity-control">
+
+          <button
+            type="button"
+            class="quantity-button"
+            onclick="changeQuantity('${product.id}', -1)"
+          >
+            −
+          </button>
+
+
+          <div
+            class="quantity-number"
+            id="qty-${product.id}"
+          >
+            ${quantity}
+          </div>
+
+
+          <button
+            type="button"
+            class="quantity-button"
+            onclick="changeQuantity('${product.id}', 1)"
+          >
+            +
+          </button>
+
+        </div>
+        `;
+
+
+      productList.appendChild(
+        card
       );
 
-
-    const quantity =
-      cartItem
-        ? cartItem.quantity
-        : 0;
-
-
-    const card =
-      document.createElement(
-        "div"
-      );
-
-
-    card.className =
-      "product-card";
-
-
-    if (quantity > 0) {
-
-      card.classList.add(
-        "selected"
-      );
     }
-
-
-    card.innerHTML =
-      `
-      <div class="product-info">
-
-        <div class="product-name">
-          ${escapeHTML(product.name)}
-        </div>
-
-        <div class="product-type">
-
-          ${
-            product.type === "Box"
-              ? "กล่อง"
-              : "เค้กกล้วยหอม"
-          }
-
-        </div>
-
-        <div class="product-price">
-
-          ${formatMoney(product.price)}
-          บาท
-
-        </div>
-
-      </div>
-
-
-      <div class="quantity-control">
-
-        <button
-          type="button"
-          class="quantity-button"
-          onclick="changeQuantity('${product.id}', -1)"
-        >
-          −
-        </button>
-
-
-        <div
-          class="quantity-number"
-          id="qty-${product.id}"
-        >
-          ${quantity}
-        </div>
-
-
-        <button
-          type="button"
-          class="quantity-button"
-          onclick="changeQuantity('${product.id}', 1)"
-        >
-          +
-        </button>
-
-      </div>
-      `;
-
-
-    productList.appendChild(
-      card
-    );
-
-  });
+  );
 
 }
 
+
+// ========================================
+// CART
+// ========================================
 
 function changeQuantity(
   productId,
@@ -394,20 +607,23 @@ function changeQuantity(
   const product =
     products.find(
       item =>
-        item.id === productId
+        item.id ===
+        productId
     );
 
 
   if (!product) {
 
     return;
+
   }
 
 
   let cartItem =
     cart.find(
       item =>
-        item.id === productId
+        item.id ===
+        productId
     );
 
 
@@ -425,7 +641,9 @@ function changeQuantity(
         product.name,
 
       price:
-        Number(product.price),
+        Number(
+          product.price
+        ),
 
       quantity:
         1
@@ -442,14 +660,17 @@ function changeQuantity(
 
 
     if (
-      cartItem.quantity <= 0
+      cartItem.quantity <=
+      0
     ) {
 
       cart =
         cart.filter(
           item =>
-            item.id !== productId
+            item.id !==
+            productId
         );
+
     }
 
   }
@@ -461,6 +682,10 @@ function changeQuantity(
 
 }
 
+
+// ========================================
+// RENDER CART
+// ========================================
 
 function renderCart() {
 
@@ -480,48 +705,59 @@ function renderCart() {
       `;
 
     return;
+
   }
 
 
-  let html = "";
+  let html =
+    "";
 
-  let total = 0;
-
-
-  cart.forEach(function (item) {
-
-    const itemTotal =
-      item.price *
-      item.quantity;
+  let total =
+    0;
 
 
-    total +=
-      itemTotal;
+  cart.forEach(
+    function (item) {
+
+      const itemTotal =
+        item.price *
+        item.quantity;
 
 
-    html +=
-      `
-      <div class="order-summary-item">
+      total +=
+        itemTotal;
 
-        <div class="summary-name">
 
-          ${escapeHTML(item.name)}
-          × ${item.quantity}
+      html +=
+        `
+        <div class="order-summary-item">
+
+          <div class="summary-name">
+
+            ${escapeHTML(
+              item.name
+            )}
+
+            × ${item.quantity}
+
+          </div>
+
+
+          <div class="summary-price">
+
+            ${formatMoney(
+              itemTotal
+            )}
+
+            บาท
+
+          </div>
 
         </div>
+        `;
 
-
-        <div class="summary-price">
-
-          ${formatMoney(itemTotal)}
-          บาท
-
-        </div>
-
-      </div>
-      `;
-
-  });
+    }
+  );
 
 
   html +=
@@ -534,7 +770,10 @@ function renderCart() {
 
       <span>
 
-        ${formatMoney(total)}
+        ${formatMoney(
+          total
+        )}
+
         บาท
 
       </span>
@@ -549,10 +788,17 @@ function renderCart() {
 }
 
 
+// ========================================
+// CART TOTAL
+// ========================================
+
 function getCartTotal() {
 
   return cart.reduce(
-    function (total, item) {
+    function (
+      total,
+      item
+    ) {
 
       return (
         total +
@@ -572,7 +818,10 @@ function getCartTotal() {
 function getCartQuantity() {
 
   return cart.reduce(
-    function (total, item) {
+    function (
+      total,
+      item
+    ) {
 
       return (
         total +
@@ -585,6 +834,10 @@ function getCartQuantity() {
 
 }
 
+
+// ========================================
+// SUBMIT ORDER
+// ========================================
 
 async function submitOrder() {
 
@@ -602,6 +855,7 @@ async function submitOrder() {
     );
 
     return;
+
   }
 
 
@@ -619,6 +873,7 @@ async function submitOrder() {
     );
 
     return;
+
   }
 
 
@@ -636,25 +891,57 @@ async function submitOrder() {
     );
 
     return;
+
   }
 
 
-  const phone =
+  // ====================================
+  // PHONE CHECK
+  // ====================================
+
+  const phoneInput =
     document.getElementById(
       "phone"
-    ).value.trim();
+    );
 
 
-  if (!isValidPhone(phone)) {
+  if (!phoneInput) {
 
     showStatus(
-      "กรุณากรอกเบอร์โทรศัพท์ 10 หลักครับ",
+      "ไม่พบช่องเบอร์มือถือ",
       "error"
     );
 
     return;
+
   }
 
+
+  const phone =
+    phoneInput.value.trim();
+
+
+  if (!isValidPhone(phone)) {
+
+    validatePhoneField();
+
+
+    showStatus(
+      "กรุณากรอกเบอร์มือถือให้ครบ 10 หลักครับ",
+      "error"
+    );
+
+
+    phoneInput.focus();
+
+    return;
+
+  }
+
+
+  // ====================================
+  // CREATE ORDER
+  // ====================================
 
   const orderId =
     createOrderId();
@@ -754,6 +1041,7 @@ async function submitOrder() {
         result.error ||
         "ไม่สามารถบันทึกออเดอร์ได้"
       );
+
     }
 
 
@@ -772,15 +1060,22 @@ async function submitOrder() {
       <br>
 
       เลขที่ออเดอร์:
+
       <strong>
-        ${escapeHTML(orderId)}
+        ${escapeHTML(
+          orderId
+        )}
       </strong>
 
       <br>
 
       ยอดรวม:
+
       <strong>
-        ${formatMoney(orderData.total)}
+        ${formatMoney(
+          orderData.total
+        )}
+
         บาท
       </strong>
       `,
@@ -794,7 +1089,8 @@ async function submitOrder() {
     );
 
 
-    cart = [];
+    cart =
+      [];
 
 
     renderProducts();
@@ -802,14 +1098,14 @@ async function submitOrder() {
     renderCart();
 
 
-    document.getElementById(
-      "phone"
-    ).value = "";
+    phoneInput.value =
+      "";
 
 
     document.getElementById(
       "pickupTime"
-    ).value = "";
+    ).value =
+      "";
 
 
     button.textContent =
@@ -836,10 +1132,15 @@ async function submitOrder() {
 
     button.textContent =
       "ดำเนินการสั่งซื้อ";
+
   }
 
 }
 
+
+// ========================================
+// PAYMENT SECTION
+// ========================================
 
 function showPaymentSection(
   orderId,
@@ -871,6 +1172,7 @@ function showPaymentSection(
     );
 
     return;
+
   }
 
 
@@ -893,12 +1195,20 @@ function showPaymentSection(
 
 
   section.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
+    behavior:
+      "smooth",
+
+    block:
+      "start"
+
   });
 
 }
 
+
+// ========================================
+// PROMPTPAY QR
+// ========================================
 
 function generatePromptPayQR(
   amount
@@ -917,6 +1227,7 @@ function generatePromptPayQR(
     );
 
     return;
+
   }
 
 
@@ -930,6 +1241,7 @@ function generatePromptPayQR(
     );
 
     return;
+
   }
 
 
@@ -974,6 +1286,7 @@ function generatePromptPayQR(
           );
 
           return;
+
         }
 
 
@@ -997,6 +1310,10 @@ function generatePromptPayQR(
 }
 
 
+// ========================================
+// PROMPTPAY PAYLOAD
+// ========================================
+
 function createPromptPayPayload(
   target,
   amount
@@ -1010,9 +1327,11 @@ function createPromptPayPayload(
       );
 
 
-  let targetTag = "";
+  let targetTag =
+    "";
 
-  let targetValue = "";
+  let targetValue =
+    "";
 
 
   if (
@@ -1089,6 +1408,7 @@ function createPromptPayPayload(
     "000201" +
     "010212" +
     merchantAccountField +
+    "52040000" +
     "5303764" +
     "5802TH";
 
@@ -1126,6 +1446,10 @@ function createPromptPayPayload(
 }
 
 
+// ========================================
+// CRC16
+// ========================================
+
 function calculateCRC16(
   text
 ) {
@@ -1161,15 +1485,19 @@ function calculateCRC16(
           ) ^
           0x1021;
 
-      } else {
+      }
+
+      else {
 
         crc <<=
           1;
+
       }
 
 
       crc &=
         0xFFFF;
+
     }
 
   }
@@ -1185,6 +1513,10 @@ function calculateCRC16(
 
 }
 
+
+// ========================================
+// CONFIRM PAYMENT
+// ========================================
 
 async function confirmPayment() {
 
@@ -1211,6 +1543,7 @@ async function confirmPayment() {
 
 
     return;
+
   }
 
 
@@ -1223,6 +1556,7 @@ async function confirmPayment() {
   if (!confirmed) {
 
     return;
+
   }
 
 
@@ -1284,6 +1618,7 @@ async function confirmPayment() {
         result.error ||
         "ไม่สามารถแจ้งชำระเงินได้"
       );
+
     }
 
 
@@ -1295,7 +1630,9 @@ async function confirmPayment() {
 
       <strong>
         เลขที่ออเดอร์:
-        ${escapeHTML(currentOrder.orderId)}
+        ${escapeHTML(
+          currentOrder.orderId
+        )}
       </strong>
 
       <br><br>
@@ -1335,10 +1672,15 @@ async function confirmPayment() {
 
     button.textContent =
       "ฉันชำระเงินแล้ว";
+
   }
 
 }
 
+
+// ========================================
+// ORDER ID
+// ========================================
 
 function createOrderId() {
 
@@ -1388,12 +1730,23 @@ function createOrderId() {
 }
 
 
+// ========================================
+// MINIMUM PICKUP DATE
+// ========================================
+
 function setMinimumPickupDate() {
 
   const input =
     document.getElementById(
       "pickupDate"
     );
+
+
+  if (!input) {
+
+    return;
+
+  }
 
 
   const today =
@@ -1440,6 +1793,10 @@ function setMinimumPickupDate() {
 }
 
 
+// ========================================
+// PHONE CHECK
+// ========================================
+
 function isValidPhone(
   phone
 ) {
@@ -1450,6 +1807,10 @@ function isValidPhone(
 
 }
 
+
+// ========================================
+// FORMAT MONEY
+// ========================================
 
 function formatMoney(
   number
@@ -1464,6 +1825,10 @@ function formatMoney(
 }
 
 
+// ========================================
+// STATUS
+// ========================================
+
 function showStatus(
   message,
   type
@@ -1473,6 +1838,13 @@ function showStatus(
     document.getElementById(
       "statusMessage"
     );
+
+
+  if (!status) {
+
+    return;
+
+  }
 
 
   status.innerHTML =
@@ -1486,11 +1858,17 @@ function showStatus(
 }
 
 
+// ========================================
+// ESCAPE HTML
+// ========================================
+
 function escapeHTML(
   value
 ) {
 
-  return String(value)
+  return String(
+    value
+  )
 
     .replace(
       /&/g,
