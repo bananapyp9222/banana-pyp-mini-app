@@ -690,3 +690,16 @@ body {
   opacity: 0.6;
   cursor: not-allowed;
 }
+.input-error {
+  color: #d93025;
+  font-size: 13px;
+  margin-top: 6px;
+  min-height: 18px;
+}
+
+.input-success {
+  color: #188038;
+  font-size: 13px;
+  margin-top: 6px;
+  min-height: 18px;
+}
