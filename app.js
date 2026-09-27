@@ -1553,6 +1553,10 @@ function createPromptPayPayload(
     "";
 
 
+  // ======================================
+  // PromptPay Mobile Number
+  // ======================================
+
   if (
     id.length === 10
   ) {
@@ -1567,6 +1571,10 @@ function createPromptPayPayload(
 
   }
 
+
+  // ======================================
+  // PromptPay National ID / Tax ID
+  // ======================================
 
   else if (
     id.length === 13
@@ -1591,6 +1599,10 @@ function createPromptPayPayload(
   }
 
 
+  // ======================================
+  // PromptPay Merchant Account
+  // ======================================
+
   const merchantAccount =
     targetTag +
     String(
@@ -1602,8 +1614,13 @@ function createPromptPayPayload(
     targetValue;
 
 
+  // ======================================
+  // IMPORTANT:
+  // Correct PromptPay AID
+  // ======================================
+
   const merchantAccountInformation =
-    "0016A0000006770108" +
+    "0016A000000677010111" +
     merchantAccount;
 
 
@@ -1618,10 +1635,18 @@ function createPromptPayPayload(
     merchantAccountInformation;
 
 
+  // ======================================
+  // Amount
+  // ======================================
+
   const amountText =
     Number(amount)
       .toFixed(2);
 
+
+  // ======================================
+  // Base Payload
+  // ======================================
 
   let payload =
     "000201" +
@@ -1631,6 +1656,10 @@ function createPromptPayPayload(
     "5303764" +
     "5802TH";
 
+
+  // ======================================
+  // Transaction Amount
+  // ======================================
 
   if (
     Number(amount) > 0
@@ -1649,6 +1678,10 @@ function createPromptPayPayload(
   }
 
 
+  // ======================================
+  // CRC
+  // ======================================
+
   payload +=
     "6304";
 
@@ -1659,8 +1692,10 @@ function createPromptPayPayload(
     );
 
 
-  return payload +
-    crc;
+  return (
+    payload +
+    crc
+  );
 
 }
 
