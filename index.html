@@ -196,13 +196,20 @@
           เบอร์โทรศัพท์
         </label>
 
-        <input
-          type="tel"
-          id="phone"
-          inputmode="numeric"
-          placeholder="เช่น 0812345678"
-          maxlength="10"
-        >
+        <div class="form-group">
+  <label for="customerPhone">เบอร์มือถือ</label>
+
+  <input
+    type="tel"
+    id="customerPhone"
+    inputmode="numeric"
+    maxlength="10"
+    placeholder="กรอกเบอร์มือถือ 10 หลัก"
+    autocomplete="tel"
+  >
+
+  <div id="phoneError" class="input-error"></div>
+</div>
 
       </div>
 
