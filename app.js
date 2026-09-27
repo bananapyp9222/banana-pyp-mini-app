@@ -1425,109 +1425,28 @@ function showPaymentSection(
 }
 
 
-// ========================================
-// PROMPTPAY QR
-// ========================================
+function generatePromptPayQR(amount) {
+  const qr = document.getElementById("promptpayQR");
 
-function generatePromptPayQR(
-  amount
-) {
-
-  const canvas =
-    document.getElementById(
-      "promptpayQR"
-    );
-
-
-  if (!canvas) {
-
-    console.error(
-      "ไม่พบ canvas #promptpayQR"
-    );
-
+  if (!qr) {
+    console.error("ไม่พบรูป QR #promptpayQR");
     return;
-
   }
 
+  // ใช้ QR LINE BK จริงที่อัปโหลดไว้ใน GitHub
+  qr.src = "linebk-qr.png";
 
-  if (
-    typeof QRCode ===
-    "undefined"
-  ) {
+  qr.alt =
+    "QR รับชำระเงิน BANANA PYP ยอด " +
+    formatMoney(amount) +
+    " บาท";
 
-    console.error(
-      "ไม่พบ QRCode Library"
-    );
-
-    return;
-
-  }
-
-
-  try {
-
-    const payload =
-      createPromptPayPayload(
-        PROMPTPAY_ID,
-        amount
-      );
-
-
-    console.log(
-      "PromptPay payload:",
-      payload
-    );
-
-
-    QRCode.toCanvas(
-      canvas,
-      payload,
-      {
-
-        width:
-          260,
-
-        margin:
-          2,
-
-        errorCorrectionLevel:
-          "M"
-
-      },
-
-      function (error) {
-
-        if (error) {
-
-          console.error(
-            "QR generation error:",
-            error
-          );
-
-          return;
-
-        }
-
-
-        console.log(
-          "PromptPay QR generated successfully"
-        );
-
-      }
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "PromptPay QR error:",
-      error
-    );
-
-  }
-
+  console.log(
+    "ใช้ LINE BK QR สำหรับยอด " +
+    formatMoney(amount) +
+    " บาท"
+  );
 }
-
 
 // ========================================
 // PROMPTPAY PAYLOAD
