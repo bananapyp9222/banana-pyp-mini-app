@@ -1,5 +1,7 @@
 const LIFF_ID = "2011754643-QvvqgzbX";
-const API_URL = "https://script.google.com/macros/s/AKfycbyjgkCZeyEiXyqmK9GyzFYqNVQviOY6tgznDxo_LHo2MgkKr199yd1Skv_LiQshvMQ0YQ/exec";
+
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbyjgkCZeyEiXyqmK9GyzFYqNVQviOY6tgznDxo_LHo2MgkKr199yd1Skv_LiQshvMQ0YQ/exec";
 
 const PROMPTPAY_ID = "1101100055692";
 
@@ -21,41 +23,71 @@ let currentOrder = {
 // START APP
 // ========================================
 
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener(
+  "DOMContentLoaded",
+  async function () {
 
-  console.log("BANANA PYP MINI APP starting...");
-
-  setMinimumPickupDate();
-
-  const orderButton =
-    document.getElementById("orderButton");
-
-  if (orderButton) {
-    orderButton.addEventListener(
-      "click",
-      submitOrder
+    console.log(
+      "BANANA PYP MINI APP starting..."
     );
+
+    setMinimumPickupDate();
+
+    const orderButton =
+      document.getElementById(
+        "orderButton"
+      );
+
+    if (orderButton) {
+
+      orderButton.addEventListener(
+        "click",
+        submitOrder
+      );
+
+    }
+
+
+    const paymentButton =
+      document.getElementById(
+        "paymentConfirmButton"
+      );
+
+    if (paymentButton) {
+
+      paymentButton.addEventListener(
+        "click",
+        confirmPayment
+      );
+
+    }
+
+
+    const refreshOrdersButton =
+      document.getElementById(
+        "refreshOrdersButton"
+      );
+
+    if (refreshOrdersButton) {
+
+      refreshOrdersButton.addEventListener(
+        "click",
+        loadMyOrders
+      );
+
+    }
+
+
+    setupPhoneValidation();
+
+    await initializeLINE();
+
+    await loadProducts();
+
+    renderCart();
+
   }
-
-  const paymentButton =
-    document.getElementById("paymentConfirmButton");
-
-  if (paymentButton) {
-    paymentButton.addEventListener(
-      "click",
-      confirmPayment
-    );
-  }
-
-  setupPhoneValidation();
-
-  await initializeLINE();
-
-  await loadProducts();
-
-  renderCart();
-
-});
+);
 
 
 // ========================================
@@ -65,19 +97,22 @@ document.addEventListener("DOMContentLoaded", async function () {
 function setupPhoneValidation() {
 
   const phoneInput =
-    document.getElementById("phone");
+    document.getElementById(
+      "customerPhone"
+    );
+
 
   if (!phoneInput) {
 
     console.warn(
-      "ไม่พบช่องเบอร์โทรศัพท์ #phone"
+      "ไม่พบช่องเบอร์มือถือ #customerPhone"
     );
 
     return;
+
   }
 
 
-  // ให้กรอกได้เฉพาะตัวเลข
   phoneInput.setAttribute(
     "inputmode",
     "numeric"
@@ -93,7 +128,6 @@ function setupPhoneValidation() {
     "input",
     function () {
 
-      // เอาเฉพาะตัวเลข
       let phone =
         phoneInput.value.replace(
           /\D/g,
@@ -101,7 +135,6 @@ function setupPhoneValidation() {
         );
 
 
-      // จำกัด 10 หลัก
       if (phone.length > 10) {
 
         phone =
@@ -135,14 +168,22 @@ function setupPhoneValidation() {
 }
 
 
+// ========================================
+// VALIDATE PHONE
+// ========================================
+
 function validatePhoneField() {
 
   const phoneInput =
-    document.getElementById("phone");
+    document.getElementById(
+      "customerPhone"
+    );
+
 
   if (!phoneInput) {
 
     return false;
+
   }
 
 
@@ -156,8 +197,6 @@ function validatePhoneField() {
     );
 
 
-  // ถ้ายังไม่มีช่องข้อความแจ้งเตือน
-  // ให้สร้างให้อัตโนมัติ
   if (!errorElement) {
 
     errorElement =
@@ -233,17 +272,29 @@ async function initializeLINE() {
         "LIFF ID ยังไม่ได้ตั้งค่า"
       );
 
-      document.getElementById(
-        "customerName"
-      ).textContent =
-        "BANANA PYP 🍌";
+      const nameElement =
+        document.getElementById(
+          "customerName"
+        );
+
+      if (nameElement) {
+
+        nameElement.value =
+          "BANANA PYP 🍌";
+
+        nameElement.textContent =
+          "BANANA PYP 🍌";
+
+      }
 
       return;
+
     }
 
 
     await liff.init({
-      liffId: LIFF_ID
+      liffId:
+        LIFF_ID
     });
 
 
@@ -274,10 +325,36 @@ async function initializeLINE() {
       "ลูกค้า";
 
 
-    document.getElementById(
-      "customerName"
-    ).textContent =
-      lineUser.displayName;
+    const nameElement =
+      document.getElementById(
+        "customerName"
+      );
+
+
+    if (nameElement) {
+
+      if (
+        nameElement.tagName ===
+        "INPUT"
+      ) {
+
+        nameElement.value =
+          lineUser.displayName;
+
+      }
+
+      else {
+
+        nameElement.textContent =
+          lineUser.displayName;
+
+      }
+
+    }
+
+
+    // โหลดออเดอร์ของลูกค้าหลัง LINE Login
+    await loadMyOrders();
 
 
   } catch (error) {
@@ -288,10 +365,32 @@ async function initializeLINE() {
     );
 
 
-    document.getElementById(
-      "customerName"
-    ).textContent =
-      "BANANA PYP 🍌";
+    const nameElement =
+      document.getElementById(
+        "customerName"
+      );
+
+
+    if (nameElement) {
+
+      if (
+        nameElement.tagName ===
+        "INPUT"
+      ) {
+
+        nameElement.value =
+          "BANANA PYP 🍌";
+
+      }
+
+      else {
+
+        nameElement.textContent =
+          "BANANA PYP 🍌";
+
+      }
+
+    }
 
   }
 
@@ -321,59 +420,115 @@ async function loadProducts() {
       products = [
 
         {
-          id: "P001",
-          name: "เค้กกล้วยหอมทอง",
-          price: 85,
-          type: "Cake"
+          id:
+            "P001",
+
+          name:
+            "เค้กกล้วยหอมทอง",
+
+          price:
+            85,
+
+          type:
+            "Cake"
         },
 
         {
-          id: "P002",
-          name: "เค้กกล้วยหอมทอง อัลมอนด์",
-          price: 85,
-          type: "Cake"
+          id:
+            "P002",
+
+          name:
+            "เค้กกล้วยหอมทอง อัลมอนด์",
+
+          price:
+            85,
+
+          type:
+            "Cake"
         },
 
         {
-          id: "P003",
-          name: "เค้กกล้วยหอมทอง ครีมชีส",
-          price: 125,
-          type: "Cake"
+          id:
+            "P003",
+
+          name:
+            "เค้กกล้วยหอมทอง ครีมชีส",
+
+          price:
+            125,
+
+          type:
+            "Cake"
         },
 
         {
-          id: "P004",
-          name: "เค้กกล้วยหอมช๊อกโก้",
-          price: 85,
-          type: "Cake"
+          id:
+            "P004",
+
+          name:
+            "เค้กกล้วยหอมช๊อกโก้",
+
+          price:
+            85,
+
+          type:
+            "Cake"
         },
 
         {
-          id: "P005",
-          name: "เค้กกล้วยหอมช๊อกโก้ อัลมอนด์",
-          price: 85,
-          type: "Cake"
+          id:
+            "P005",
+
+          name:
+            "เค้กกล้วยหอมช๊อกโก้ อัลมอนด์",
+
+          price:
+            85,
+
+          type:
+            "Cake"
         },
 
         {
-          id: "P006",
-          name: "เค้กกล้วยหอมช๊อกโก้ ครีมชีส",
-          price: 125,
-          type: "Cake"
+          id:
+            "P006",
+
+          name:
+            "เค้กกล้วยหอมช๊อกโก้ ครีมชีส",
+
+          price:
+            125,
+
+          type:
+            "Cake"
         },
 
         {
-          id: "B001",
-          name: "Box 4 ชิ้น ไม่มีครีมชีส",
-          price: 325,
-          type: "Box"
+          id:
+            "B001",
+
+          name:
+            "Box 4 ชิ้น ไม่มีครีมชีส",
+
+          price:
+            325,
+
+          type:
+            "Box"
         },
 
         {
-          id: "B002",
-          name: "Box 4 ชิ้น ครีมชีส 1 ชิ้น",
-          price: 365,
-          type: "Box"
+          id:
+            "B002",
+
+          name:
+            "Box 4 ชิ้น ครีมชีส 1 ชิ้น",
+
+          price:
+            365,
+
+          type:
+            "Box"
         }
 
       ];
@@ -435,18 +590,22 @@ async function loadProducts() {
     );
 
 
-    productList.innerHTML =
-      `
-      <div class="loading">
+    if (productList) {
 
-        ไม่สามารถโหลดสินค้าได้
+      productList.innerHTML =
+        `
+        <div class="loading">
 
-        <br><br>
+          ไม่สามารถโหลดสินค้าได้
 
-        กรุณาลองใหม่อีกครั้ง
+          <br><br>
 
-      </div>
-      `;
+          กรุณาลองใหม่อีกครั้ง
+
+        </div>
+        `;
+
+    }
 
   }
 
@@ -463,6 +622,13 @@ function renderProducts() {
     document.getElementById(
       "productList"
     );
+
+
+  if (!productList) {
+
+    return;
+
+  }
 
 
   if (!products.length) {
@@ -695,6 +861,13 @@ function renderCart() {
     );
 
 
+  if (!summary) {
+
+    return;
+
+  }
+
+
   if (!cart.length) {
 
     summary.innerHTML =
@@ -862,7 +1035,7 @@ async function submitOrder() {
   const pickupDate =
     document.getElementById(
       "pickupDate"
-    ).value;
+    )?.value;
 
 
   if (!pickupDate) {
@@ -880,7 +1053,7 @@ async function submitOrder() {
   const pickupTime =
     document.getElementById(
       "pickupTime"
-    ).value;
+    )?.value;
 
 
   if (!pickupTime) {
@@ -901,14 +1074,14 @@ async function submitOrder() {
 
   const phoneInput =
     document.getElementById(
-      "phone"
+      "customerPhone"
     );
 
 
   if (!phoneInput) {
 
     showStatus(
-      "ไม่พบช่องเบอร์มือถือ",
+      "ไม่พบช่องเบอร์มือถือในระบบ กรุณารีเฟรชหน้า MINI APP",
       "error"
     );
 
@@ -933,6 +1106,22 @@ async function submitOrder() {
 
 
     phoneInput.focus();
+
+    return;
+
+  }
+
+
+  // ====================================
+  // CHECK LINE USER
+  // ====================================
+
+  if (!lineUser.userId) {
+
+    showStatus(
+      "กำลังเชื่อมต่อ LINE กรุณารอสักครู่แล้วลองใหม่ครับ",
+      "error"
+    );
 
     return;
 
@@ -991,12 +1180,15 @@ async function submitOrder() {
   };
 
 
-  button.disabled =
-    true;
+  if (button) {
 
+    button.disabled =
+      true;
 
-  button.textContent =
-    "กำลังส่งคำสั่งซื้อ...";
+    button.textContent =
+      "กำลังส่งคำสั่งซื้อ...";
+
+  }
 
 
   showStatus(
@@ -1102,14 +1294,30 @@ async function submitOrder() {
       "";
 
 
-    document.getElementById(
-      "pickupTime"
-    ).value =
-      "";
+    const pickupTimeInput =
+      document.getElementById(
+        "pickupTime"
+      );
 
 
-    button.textContent =
-      "สั่งซื้อสำเร็จ ✓";
+    if (pickupTimeInput) {
+
+      pickupTimeInput.value =
+        "";
+
+    }
+
+
+    if (button) {
+
+      button.textContent =
+        "สั่งซื้อสำเร็จ ✓";
+
+    }
+
+
+    // โหลดออเดอร์ใหม่ทันที
+    await loadMyOrders();
 
 
   } catch (error) {
@@ -1126,12 +1334,15 @@ async function submitOrder() {
     );
 
 
-    button.disabled =
-      false;
+    if (button) {
 
+      button.disabled =
+        false;
 
-    button.textContent =
-      "ดำเนินการสั่งซื้อ";
+      button.textContent =
+        "ดำเนินการสั่งซื้อ";
+
+    }
 
   }
 
@@ -1176,13 +1387,21 @@ function showPaymentSection(
   }
 
 
-  orderIdElement.textContent =
-    orderId;
+  if (orderIdElement) {
+
+    orderIdElement.textContent =
+      orderId;
+
+  }
 
 
-  totalElement.textContent =
-    formatMoney(total) +
-    " บาท";
+  if (totalElement) {
+
+    totalElement.textContent =
+      formatMoney(total) +
+      " บาท";
+
+  }
 
 
   section.style.display =
@@ -1534,13 +1753,15 @@ async function confirmPayment() {
 
   if (!currentOrder.orderId) {
 
-    status.textContent =
-      "ไม่พบเลขที่ออเดอร์";
+    if (status) {
 
+      status.textContent =
+        "ไม่พบเลขที่ออเดอร์";
 
-    status.className =
-      "status-message error";
+      status.className =
+        "status-message error";
 
+    }
 
     return;
 
@@ -1560,20 +1781,26 @@ async function confirmPayment() {
   }
 
 
-  button.disabled =
-    true;
+  if (button) {
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "กำลังแจ้งชำระเงิน...";
+
+  }
 
 
-  button.textContent =
-    "กำลังแจ้งชำระเงิน...";
+  if (status) {
 
+    status.textContent =
+      "กำลังส่งข้อมูลให้ร้านตรวจสอบ...";
 
-  status.textContent =
-    "กำลังส่งข้อมูลให้ร้านตรวจสอบ...";
+    status.className =
+      "status-message info";
 
-
-  status.className =
-    "status-message info";
+  }
 
 
   try {
@@ -1622,32 +1849,43 @@ async function confirmPayment() {
     }
 
 
-    status.innerHTML =
-      `
-      แจ้งชำระเงินเรียบร้อยแล้ว ✅
+    if (status) {
 
-      <br>
+      status.innerHTML =
+        `
+        แจ้งชำระเงินเรียบร้อยแล้ว ✅
 
-      <strong>
-        เลขที่ออเดอร์:
-        ${escapeHTML(
-          currentOrder.orderId
-        )}
-      </strong>
+        <br>
 
-      <br><br>
+        <strong>
+          เลขที่ออเดอร์:
+          ${escapeHTML(
+            currentOrder.orderId
+          )}
+        </strong>
 
-      ร้านจะตรวจสอบยอดเงิน
-      และยืนยันการชำระเงินให้ครับ
-      `;
+        <br><br>
 
-
-    status.className =
-      "status-message success";
+        ร้านจะตรวจสอบยอดเงิน
+        และยืนยันการชำระเงินให้ครับ
+        `;
 
 
-    button.textContent =
-      "แจ้งชำระเงินแล้ว ✓";
+      status.className =
+        "status-message success";
+
+    }
+
+
+    if (button) {
+
+      button.textContent =
+        "แจ้งชำระเงินแล้ว ✓";
+
+    }
+
+
+    await loadMyOrders();
 
 
   } catch (error) {
@@ -1658,20 +1896,485 @@ async function confirmPayment() {
     );
 
 
-    status.textContent =
-      "แจ้งชำระเงินไม่สำเร็จ กรุณาลองใหม่อีกครั้งครับ";
+    if (status) {
+
+      status.textContent =
+        "แจ้งชำระเงินไม่สำเร็จ กรุณาลองใหม่อีกครั้งครับ";
+
+      status.className =
+        "status-message error";
+
+    }
 
 
-    status.className =
-      "status-message error";
+    if (button) {
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        "ฉันชำระเงินแล้ว";
+
+    }
+
+  }
+
+}
 
 
-    button.disabled =
-      false;
+// ========================================
+// MY ORDERS
+// ========================================
+
+async function loadMyOrders() {
+
+  const container =
+    document.getElementById(
+      "myOrdersList"
+    );
 
 
-    button.textContent =
-      "ฉันชำระเงินแล้ว";
+  if (!container) {
+
+    return;
+
+  }
+
+
+  if (!lineUser.userId) {
+
+    container.innerHTML =
+      `
+      <div class="loading">
+        กำลังเชื่อมต่อ LINE...
+      </div>
+      `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    `
+    <div class="loading">
+      กำลังโหลดออเดอร์ของคุณ...
+    </div>
+    `;
+
+
+  try {
+
+    const url =
+      API_URL +
+      "?action=getMyOrders&lineUserId=" +
+      encodeURIComponent(
+        lineUser.userId
+      );
+
+
+    const response =
+      await fetch(url);
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "ไม่สามารถโหลดออเดอร์ได้"
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !data.success ||
+      !Array.isArray(
+        data.orders
+      )
+    ) {
+
+      throw new Error(
+        data.error ||
+        "ข้อมูลออเดอร์ไม่ถูกต้อง"
+      );
+
+    }
+
+
+    renderMyOrders(
+      data.orders
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Load my orders error:",
+      error
+    );
+
+
+    container.innerHTML =
+      `
+      <div class="loading">
+
+        ไม่สามารถโหลดออเดอร์ได้
+
+        <br><br>
+
+        <button
+          type="button"
+          onclick="loadMyOrders()"
+        >
+          ลองใหม่
+        </button>
+
+      </div>
+      `;
+
+  }
+
+}
+
+
+// ========================================
+// RENDER MY ORDERS
+// ========================================
+
+function renderMyOrders(
+  orders
+) {
+
+  const container =
+    document.getElementById(
+      "myOrdersList"
+    );
+
+
+  if (!container) {
+
+    return;
+
+  }
+
+
+  if (!orders.length) {
+
+    container.innerHTML =
+      `
+      <div class="empty-cart">
+
+        ยังไม่มีออเดอร์ครับ 🍌
+
+        <br><br>
+
+        เลือกสินค้าแล้วสั่งซื้อได้เลย
+
+      </div>
+      `;
+
+    return;
+
+  }
+
+
+  let html =
+    "";
+
+
+  orders.forEach(
+    function (order) {
+
+      const orderStatus =
+        getOrderStatusDisplay(
+          order.orderStatus
+        );
+
+
+      const paymentStatus =
+        getPaymentStatusDisplay(
+          order.paymentStatus
+        );
+
+
+      html +=
+        `
+        <div class="my-order-card">
+
+          <div class="my-order-header">
+
+            <div>
+
+              <div class="my-order-label">
+                เลขที่ออเดอร์
+              </div>
+
+              <strong>
+                ${escapeHTML(
+                  order.orderId
+                )}
+              </strong>
+
+            </div>
+
+            <div class="my-order-date">
+
+              ${escapeHTML(
+                order.orderDate || ""
+              )}
+
+            </div>
+
+          </div>
+
+
+          <div class="my-order-items">
+
+            ${escapeHTML(
+              order.items || ""
+            )}
+
+          </div>
+
+
+          <div class="my-order-row">
+
+            <span>
+              ยอดรวม
+            </span>
+
+            <strong>
+              ${formatMoney(
+                order.total
+              )} บาท
+            </strong>
+
+          </div>
+
+
+          <div class="my-order-row">
+
+            <span>
+              วันรับสินค้า
+            </span>
+
+            <strong>
+              ${escapeHTML(
+                order.pickupDate || "-"
+              )}
+            </strong>
+
+          </div>
+
+
+          <div class="my-order-row">
+
+            <span>
+              เวลารับ
+            </span>
+
+            <strong>
+              ${escapeHTML(
+                order.pickupTime || "-"
+              )}
+            </strong>
+
+          </div>
+
+
+          <div class="my-order-status">
+
+            <div>
+
+              <span>
+                สถานะออเดอร์
+              </span>
+
+              <span
+                class="order-status-badge ${orderStatus.className}"
+              >
+                ${orderStatus.icon}
+                ${escapeHTML(
+                  orderStatus.text
+                )}
+              </span>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                การชำระเงิน
+              </span>
+
+              <span
+                class="order-status-badge ${paymentStatus.className}"
+              >
+                ${paymentStatus.icon}
+                ${escapeHTML(
+                  paymentStatus.text
+                )}
+              </span>
+
+            </div>
+
+          </div>
+
+
+        </div>
+        `;
+
+    }
+  );
+
+
+  container.innerHTML =
+    html;
+
+}
+
+
+// ========================================
+// ORDER STATUS DISPLAY
+// ========================================
+
+function getOrderStatusDisplay(
+  status
+) {
+
+  switch (
+    String(status || "")
+      .trim()
+  ) {
+
+    case "กำลังเตรียม":
+
+      return {
+        text:
+          "กำลังเตรียม",
+        icon:
+          "👨‍🍳",
+        className:
+          "status-preparing"
+      };
+
+
+    case "พร้อมรับ":
+
+      return {
+        text:
+          "พร้อมรับสินค้า",
+        icon:
+          "✅",
+        className:
+          "status-ready"
+      };
+
+
+    case "รับสินค้าแล้ว":
+
+      return {
+        text:
+          "รับสินค้าแล้ว",
+        icon:
+          "🎉",
+        className:
+          "status-complete"
+      };
+
+
+    case "ยกเลิก":
+
+      return {
+        text:
+          "ยกเลิก",
+        icon:
+          "❌",
+        className:
+          "status-cancelled"
+      };
+
+
+    default:
+
+      return {
+        text:
+          "รอตรวจสอบ",
+        icon:
+          "⏳",
+        className:
+          "status-pending"
+      };
+
+  }
+
+}
+
+
+// ========================================
+// PAYMENT STATUS DISPLAY
+// ========================================
+
+function getPaymentStatusDisplay(
+  status
+) {
+
+  switch (
+    String(status || "")
+      .trim()
+  ) {
+
+    case "ชำระแล้ว":
+
+      return {
+        text:
+          "ชำระเงินแล้ว",
+        icon:
+          "✅",
+        className:
+          "status-paid"
+      };
+
+
+    case "รอตรวจสอบการชำระเงิน":
+
+      return {
+        text:
+          "รอตรวจสอบยอด",
+        icon:
+          "🔎",
+        className:
+          "status-checking"
+      };
+
+
+    case "ยกเลิก":
+
+      return {
+        text:
+          "ยกเลิก",
+        icon:
+          "❌",
+        className:
+          "status-cancelled"
+      };
+
+
+    default:
+
+      return {
+        text:
+          "รอชำระเงิน",
+        icon:
+          "💳",
+        className:
+          "status-unpaid"
+      };
 
   }
 
